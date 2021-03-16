@@ -6,16 +6,16 @@
  */
 export function sortStrings(arr, param = 'asc') {
 
-  let arrToReturn = []
+  const arrToReturn = [];
 
   for (let item of arr) {
-    arrToReturn.push(item)
+    arrToReturn.push(item);
   }
 
 
-  arrToReturn.sort(function (a, b){
+  arrToReturn.sort(function (a, b) {
 
-    let icmp = a.toLowerCase().localeCompare(b.toLowerCase());
+    const icmp = a.toLowerCase().localeCompare(b.toLowerCase());
 
     if (icmp !== 0) {
       // spotted a difference when considering the locale
@@ -33,12 +33,12 @@ export function sortStrings(arr, param = 'asc') {
       // the characters are equal.
       return 0;
     }
-  })
+  });
 
 
-  if (param === 'desc'){
-    return  arrToReturn.reverse()
+  if (param === 'desc') {
+    return arrToReturn.reverse();
   } else {
-    return arrToReturn
+    return arrToReturn;
   }
 }
