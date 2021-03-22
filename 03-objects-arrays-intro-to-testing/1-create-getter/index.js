@@ -12,10 +12,10 @@ export function createGetter(path) {
     for (let i = 0; i < pathInObj.length; i++) {
 
       if (Object.keys(obj).length === 0) {
-        return undefined;
+        return;
       }
 
-      const map = new Map(Object.entries(obj));
+      let map = new Map(Object.entries(obj));
       obj = map.get(pathInObj[i]);
     }
     return obj;

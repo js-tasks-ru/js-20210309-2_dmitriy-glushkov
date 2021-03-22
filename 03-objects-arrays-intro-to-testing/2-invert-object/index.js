@@ -6,7 +6,7 @@
 export function invertObj(obj) {
 
   if (obj === undefined) {
-    return undefined;
+    return;
   }
 
   if (Object.keys(obj).length === 0) {
