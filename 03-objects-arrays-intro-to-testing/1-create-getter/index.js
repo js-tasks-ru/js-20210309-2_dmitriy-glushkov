@@ -5,4 +5,19 @@
  */
 export function createGetter(path) {
 
+  const pathInObj = path.split(".");
+
+  return function (obj) {
+
+    for (let i = 0; i < pathInObj.length; i++) {
+
+      if (Object.keys(obj).length === 0) {
+        return;
+      }
+
+      let map = new Map(Object.entries(obj));
+      obj = map.get(pathInObj[i]);
+    }
+    return obj;
+  };
 }
