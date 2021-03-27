@@ -7,15 +7,23 @@
 
 <button id="btn1">Show simple message!</button>
 
+<button id="btn2">Remove</button>
+
 <script type="module">
   import NotificationMessage from './index.js';
 
   btn1.addEventListener('click', () => {
     const notification = new NotificationMessage('Hello World', {
-      duration: 2000,
+      duration: 20000,
       type: 'success'
     });
 
     notification.show();
   });
+
+  btn2.addEventListener('click', () => {
+    const elem = document.querySelector(".success")
+    elem.remove();
+  });
+
 </script>
