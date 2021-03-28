@@ -1,6 +1,6 @@
 export default class NotificationMessage {
 
-  static notificationInstances = []
+  static linkToInstance;
 
   constructor(message = '', {duration = 0, type = 'success'} = {}) {
 
@@ -8,23 +8,11 @@ export default class NotificationMessage {
     this.duration = duration;
     this.type = type;
 
-    this.show();
-
-    NotificationMessage.notificationInstances = [];
-    NotificationMessage.notificationInstances.push(this);
-
-    setTimeout(() => this.destroy(), this.duration);
+    this.render();
   }
 
 
-  show (whatsTheHell) {
-
-    if (NotificationMessage.notificationInstances.length !== 0) {
-      for (let NI of NotificationMessage.notificationInstances) {
-        NI.remove();
-      }
-    }
-
+  render () {
     const element = document.createElement('div');
     element.className = this.type;
     element.innerHTML = `
@@ -36,14 +24,26 @@ export default class NotificationMessage {
         </div>
       </div>
     `;
-
     this.element = element;
+  }
 
-    document.body.append(this.element);
 
-    if (whatsTheHell) {
-      whatsTheHell.append(this.element);
+  show (targetElement) {
+
+    if (NotificationMessage.linkToInstance !== undefined) {
+      NotificationMessage.linkToInstance.remove();
     }
+
+    if (targetElement) {
+      targetElement.append(this.element);
+    }
+    else {
+      document.body.append(this.element);
+    }
+
+    NotificationMessage.linkToInstance = this;
+
+    setTimeout(() => this.destroy(), this.duration);
   }
 
   remove() {
