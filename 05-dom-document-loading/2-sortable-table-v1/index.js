@@ -30,6 +30,9 @@ export default class SortableTable {
       sortedField.push(item[field]);
     }
 
+    console.log('sortedField before')
+    console.log(sortedField)
+
     sortedField.sort(function (a, b) {
 
       a = a.toString();
@@ -39,13 +42,17 @@ export default class SortableTable {
         [a, b] = [b, a];
       }
 
-      const icmp = a.localeCompare(b, undefined, { caseFirst: 'upper' });
+      const icmp = a.localeCompare(b, undefined, { caseFirst: 'upper', numeric: true });
 
       if (icmp !== 0) {
         // spotted a difference when considering the locale
         return icmp;
       }
     });
+
+
+    console.log('sortedField after')
+    console.log(sortedField)
 
     // eslint-disable-next-line camelcase
     let resData = [];
@@ -63,6 +70,9 @@ export default class SortableTable {
         }
       }
     }
+
+    console.log('resData')
+    console.log(resData)
 
     this.update(resData);
 
@@ -98,18 +108,18 @@ export default class SortableTable {
     //let res = this.getHeaderFields()
 
     const headerFields = this.getHeaderFields();
-    console.log(`HEADERFIELSDS ${headerFields}`)
+    //console.log(`HEADERFIELSDS ${headerFields}`)
 
     for (let headerField of headerFields) {
 
-      console.log(headerField);
+      //console.log(headerField);
 
       for (let [key, value] of Object.entries(item)) {
 
-        console.log(`key ${key}`);
+        //console.log(`key ${key}`);
 
         if (key === headerField) {
-          console.log('Bingo')
+          //console.log('Bingo')
           res += `<div class="sortable-table__cell">${value}</div>`;
         }
       }
