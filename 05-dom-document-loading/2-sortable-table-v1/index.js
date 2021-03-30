@@ -7,6 +7,8 @@ export default class SortableTable {
     this.data = data;
 
     //console.log(typeof data) -> {data} = {}
+    // console.log('INCOMING HEADER')
+    // console.log(this.header)
 
     this.render();
   }
@@ -48,33 +50,80 @@ export default class SortableTable {
     // eslint-disable-next-line camelcase
     let resData = [];
 
-    for (let item of sortedField){
-      console.log(item)
-      for (let dataItem of this.data){
-        console.log(dataItem[field])
-        if (dataItem[field] === item){
-          resData.push(dataItem)
+    for (let item of sortedField) {
+      //console.log(item)
+      for (let dataItem of this.data) {
+
+        if (dataItem[field] === item) {
+
+          // console.warn(item);
+          // console.info(dataItem[field]);
+
+          resData.push(dataItem);
         }
       }
     }
 
-    this.update(resData)
+    this.update(resData);
 
+  }
+
+  getHeaderFields() {
+
+    const res = [];
+    for (let columnHeader of this.header) {
+      for (let [key, value] of Object.entries(columnHeader)) {
+        // console.log(`TRTR`)
+        // console.log(key, value)
+        if (key === 'id') {
+          res.push(value);
+        }
+      }
+
+    }
+
+    //console.log(res)
+
+    return res;
+  }
+
+  getFieldsOfCell(item) {
+    //console.log(item)
+    // return item.map(field =>
+    //   `<div class="sortable-table__cell">${field.value}</div>`
+    //
+    // ).join('');
+
+    let res = '';
+    //let res = this.getHeaderFields()
+
+    const headerFields = this.getHeaderFields();
+    console.log(`HEADERFIELSDS ${headerFields}`)
+
+    for (let headerField of headerFields) {
+
+      console.log(headerField);
+
+      for (let [key, value] of Object.entries(item)) {
+
+        console.log(`key ${key}`);
+
+        if (key === headerField) {
+          console.log('Bingo')
+          res += `<div class="sortable-table__cell">${value}</div>`;
+        }
+      }
+    }
+
+    return res;
   }
 
 
   getCells(data) {
     return data.map(item =>
-      `
-     <a href="/products/dvd/blu-ray-pleer-yamaha-bd-s477" class="sortable-table__row">
-         <!--<div class="sortable-table__cell">
-        <img class="sortable-table-image" alt="Image" src=${this.getLinkToImg(item)}></div>-->
-        <div class="sortable-table__cell">${item.title}</div>
-        <div class="sortable-table__cell">${item.quantity}</div>
-        <div class="sortable-table__cell">${item.price}</div>
-        <div class="sortable-table__cell">${item.sales}</div>
-      </a>
-`
+      `<a class="sortable-table__row">
+        ${this.getFieldsOfCell(item)}
+      </a>`
     ).join('');
   }
 
