@@ -6,10 +6,6 @@ export default class SortableTable {
     this.header = header;
     this.data = data;
 
-    //console.log(typeof data) -> {data} = {}
-    // console.log('INCOMING HEADER')
-    // console.log(this.header)
-
     this.render();
   }
 
@@ -22,6 +18,7 @@ export default class SortableTable {
     }
   }
 
+  
   sort(field, direction) {
 
     const sortedField = [];
@@ -29,9 +26,6 @@ export default class SortableTable {
     for (let item of this.data) {
       sortedField.push(item[field]);
     }
-
-    console.log('sortedField before')
-    console.log(sortedField)
 
     sortedField.sort(function (a, b) {
 
@@ -50,12 +44,7 @@ export default class SortableTable {
       }
     });
 
-
-    console.log('sortedField after')
-    console.log(sortedField)
-
-    // eslint-disable-next-line camelcase
-    let resData = [];
+    const resData = [];
 
     for (let item of sortedField) {
       //console.log(item)
@@ -63,68 +52,41 @@ export default class SortableTable {
 
         if (dataItem[field] === item) {
 
-          // console.warn(item);
-          // console.info(dataItem[field]);
-
           resData.push(dataItem);
         }
       }
     }
-
-    console.log('resData')
-    console.log(resData)
-
     this.update(resData);
-
   }
+
 
   getHeaderFields() {
 
     const res = [];
     for (let columnHeader of this.header) {
       for (let [key, value] of Object.entries(columnHeader)) {
-        // console.log(`TRTR`)
-        // console.log(key, value)
         if (key === 'id') {
           res.push(value);
         }
       }
-
     }
-
-    //console.log(res)
-
     return res;
   }
 
+
   getFieldsOfCell(item) {
-    //console.log(item)
-    // return item.map(field =>
-    //   `<div class="sortable-table__cell">${field.value}</div>`
-    //
-    // ).join('');
 
     let res = '';
-    //let res = this.getHeaderFields()
 
     const headerFields = this.getHeaderFields();
-    //console.log(`HEADERFIELSDS ${headerFields}`)
 
     for (let headerField of headerFields) {
-
-      //console.log(headerField);
-
       for (let [key, value] of Object.entries(item)) {
-
-        //console.log(`key ${key}`);
-
         if (key === headerField) {
-          //console.log('Bingo')
           res += `<div class="sortable-table__cell">${value}</div>`;
         }
       }
     }
-
     return res;
   }
 
@@ -140,15 +102,14 @@ export default class SortableTable {
 
   get template() {
     return `
-<!--      <div data-element="productsContainer" class="products-list__container">-->
-        <div class="sortable-table">
-          <div data-element="body" class="sortable-table__body">
-           ${this.getCells(this.data)}
-          </div>
+      <div class="sortable-table">
+        <div data-element="body" class="sortable-table__body">
+         ${this.getCells(this.data)}
         </div>
-<!--      </div>-->
+      </div>
     `;
   }
+
 
   getSubElements(element) {
     const elements = element.querySelectorAll('[data-element]');
