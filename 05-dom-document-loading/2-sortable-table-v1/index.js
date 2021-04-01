@@ -18,7 +18,7 @@ export default class SortableTable {
     }
   }
 
-  
+
   sort(field, direction) {
 
     const sortedField = [];
@@ -60,40 +60,38 @@ export default class SortableTable {
   }
 
 
-  getHeaderFields() {
+  getHeaderFields(item) {
+    return `
+      <div class="sortable-table__cell" data-id="${item.id}" data-sortable="${item.sortable}">
+        <span>${item.title}</span>
+        <span data-element="arrow" class="sortable-table__sort-arrow">
+          <span class="sort-arrow"></span>
+        </span>
+      </div>`;
+  }
 
-    const res = [];
-    for (let columnHeader of this.header) {
-      for (let [key, value] of Object.entries(columnHeader)) {
-        if (key === 'id') {
-          res.push(value);
-        }
-      }
-    }
-    return res;
+
+  getHeader() {
+    return `
+      <div data-element="header" class="sortable-table__header sortable-table__row">
+        ${this.header.map(item => this.getHeaderFields(item)).join('')}
+      </div>`;
   }
 
 
   getFieldsOfCell(item) {
+    const fieldNames = [];
+    this.header.map(headerItem => fieldNames.push(headerItem.id));
 
-    let res = '';
-
-    const headerFields = this.getHeaderFields();
-
-    for (let headerField of headerFields) {
-      for (let [key, value] of Object.entries(item)) {
-        if (key === headerField) {
-          res += `<div class="sortable-table__cell">${value}</div>`;
-        }
-      }
-    }
-    return res;
+    return fieldNames.map(fieldName =>
+      `
+        <div class="sortable-table__cell">${item[fieldName]}</div>
+       `).join('');
   }
-
 
   getCells(data) {
     return data.map(item =>
-      `<a class="sortable-table__row">
+      `<a href="/products/${item.id}" class="sortable-table__row">
         ${this.getFieldsOfCell(item)}
       </a>`
     ).join('');
@@ -103,8 +101,9 @@ export default class SortableTable {
   get template() {
     return `
       <div class="sortable-table">
+            ${this.getHeader()}
         <div data-element="body" class="sortable-table__body">
-         ${this.getCells(this.data)}
+            ${this.getCells(this.data)}
         </div>
       </div>
     `;
@@ -112,20 +111,33 @@ export default class SortableTable {
 
 
   getSubElements(element) {
+    const result = {};
     const elements = element.querySelectorAll('[data-element]');
-    return [...elements].reduce((accum, subElement) => {
-      accum[subElement.dataset.element] = subElement;
-      //console.log(accum)
-      return accum;
-    }, {});
+
+    for (const subElement of elements) {
+      const name = subElement.dataset.element;
+      // console.log('subElement', subElement)
+      // console.log('name', name)
+      result[name] = subElement;
+    }
+
+    return result;
   }
 
 
+
   render() {
-    const element = document.createElement('div');
-    element.innerHTML = this.template;
-    this.element = element.firstElementChild;
-    this.subElements = this.getSubElements(this.element);
+    const tempElem = document.createElement('div');
+
+    tempElem.innerHTML = this.template;
+
+    const elem = tempElem.firstElementChild;
+
+    //console.log('element.firstElementChild', elem.firstElementChild)
+    this.element = elem;
+
+
+    this.subElements = this.getSubElements(elem);
     //console.log(this.subElements.body.firstElementChild.children)
 
   }
