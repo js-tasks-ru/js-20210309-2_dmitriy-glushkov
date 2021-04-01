@@ -1,48 +1,43 @@
 class Tooltip {
 
   static linkToInstance;
+  static offset = 7;
+
+  constructor() {
+    if (Tooltip.linkToInstance) {
+      return Tooltip.linkToInstance;
+    }
+    Tooltip.linkToInstance = this;
+  }
 
   render(event) {
-
-    if (Tooltip.linkToInstance !== undefined) {
-      Tooltip.linkToInstance.remove();
-    }
-
-    const toolTipText = document.querySelector('[data-tooltip]').getAttribute('data-tooltip');
 
     const element = document.createElement('div');
     element.className = "tooltip";
     element.innerHTML = `
       <div>
-        ${toolTipText}
+        ${event ? event['target'].getAttribute('data-tooltip') : ''}
       </div>
     `;
     this.element = element;
 
-    const targetElement = document.querySelector('[data-tooltip]');
-    element.style.left = event.clientX + 7 + 'px';
-    element.style.top = event.clientY + 'px';
+    element.style.left = event.clientX + Tooltip.offset + 'px';
+    element.style.top = event.clientY + Tooltip.offset + 'px';
 
     document.body.append(this.element);
-
-    Tooltip.linkToInstance = this;
+  }
+  
+  findAndShowTooltip(event) {
+    if (event['target'].getAttribute('data-tooltip')) { this.render(event);}
   }
 
-  changeTooltipText (event) {
-    this.element.innerHTML = `
-     <div>
-        ${event['target'].getAttribute('data-tooltip')}
-     </div>`;
+  findAndRemoveTooltip(event) {
+    if (event['target'].getAttribute('data-tooltip')) { this.destroy();}
   }
 
   initialize() {
-    const targetElement = document.querySelector('[data-tooltip]');
-
-    targetElement.addEventListener('pointerover', (event) => this.render(event));
-
-    targetElement.addEventListener('mouseover', (event) => this.changeTooltipText(event));
-
-    targetElement.addEventListener('pointerout', () => this.destroy());
+    document.addEventListener('pointerover', (event) => this.findAndShowTooltip(event));
+    document.addEventListener('pointerout', (event) => this.findAndRemoveTooltip(event));
   }
 
   remove() {
