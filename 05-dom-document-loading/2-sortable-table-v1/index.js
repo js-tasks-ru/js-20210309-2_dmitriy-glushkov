@@ -22,10 +22,9 @@ export default class SortableTable {
   sort(field, direction) {
 
     const sortedField = [];
+    this.data.map(dataItem => sortedField.push(dataItem[field]));
 
-    for (let item of this.data) {
-      sortedField.push(item[field]);
-    }
+    console.log('sortedField', sortedField);
 
     sortedField.sort(function (a, b) {
 
@@ -46,17 +45,15 @@ export default class SortableTable {
 
     const resData = [];
 
-    for (let item of sortedField) {
-      //console.log(item)
+    sortedField.map(fieldItem => {
       for (let dataItem of this.data) {
-
-        if (dataItem[field] === item) {
-
+        if (dataItem[field] === fieldItem) {
           resData.push(dataItem);
         }
       }
-    }
-    this.update(resData);
+    });
+
+    this.subElements.body.innerHTML = this.getCells(resData);
   }
 
 
@@ -69,7 +66,6 @@ export default class SortableTable {
         </span>
       </div>`;
   }
-
 
   getHeader() {
     return `
@@ -116,35 +112,18 @@ export default class SortableTable {
 
     for (const subElement of elements) {
       const name = subElement.dataset.element;
-      // console.log('subElement', subElement)
-      // console.log('name', name)
       result[name] = subElement;
     }
-
     return result;
   }
 
 
-
   render() {
     const tempElem = document.createElement('div');
-
     tempElem.innerHTML = this.template;
-
     const elem = tempElem.firstElementChild;
-
-    //console.log('element.firstElementChild', elem.firstElementChild)
     this.element = elem;
-
-
     this.subElements = this.getSubElements(elem);
-    //console.log(this.subElements.body.firstElementChild.children)
-
-  }
-
-
-  update(bodyData) {
-    this.subElements.body.innerHTML = this.getCells(bodyData);
   }
 
   destroy() {
