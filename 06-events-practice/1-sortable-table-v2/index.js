@@ -13,6 +13,7 @@ export default class SortableTable {
     this.render();
   }
 
+  
   getLinkToImg(item) {
     if (item['images'] !== undefined && item['images'][0]['url'] !== undefined) {
       return item['images'][0]['url'];
@@ -23,13 +24,10 @@ export default class SortableTable {
   }
 
 
-
   sort(field, direction) {
 
     const sortedField = [];
     this.data.map(dataItem => sortedField.push(dataItem[field]));
-
-    //console.log('sortedField', sortedField);
 
     sortedField.sort(function (a, b) {
 
@@ -58,8 +56,6 @@ export default class SortableTable {
       }
     });
 
-    //console.log("this.subElements.header.", this.subElements.header.field)
-
     this.subElements.body.innerHTML = this.getCells(resData);
   }
 
@@ -84,6 +80,7 @@ export default class SortableTable {
       </div>`;
   }
 
+
   getHeader() {
     return `
       <div data-element="header" class="sortable-table__header sortable-table__row">
@@ -101,6 +98,7 @@ export default class SortableTable {
         <div class="sortable-table__cell">${item[fieldName]}</div>
        `).join('');
   }
+
 
   getCells(data) {
     return data.map(item =>
@@ -150,61 +148,25 @@ export default class SortableTable {
     let sortDirection = 'asc';
     const field = event.target.closest('[data-sortable="true"]');
 
-
-    //console.log('sortDirection 1', sortDirection)
-    //console.log('field.dataset', field.dataset)
-
-    // const toggleOrder = order => {
-    //   const orders = {
-    //     asc: 'desc',
-    //     desc: 'asc'
-    //   };
-    //
-    //   return orders[order];
-    // };
-
     if (field) {
-
-
-
       if (field.querySelector('.sortable-table__sort-arrow') != null) {
         if (field.dataset.order === 'asc') {
-          sortDirection = 'desc'
+          sortDirection = 'desc';
         }
       }
 
       const fieldId = field.dataset.id;
 
-
-      // console.log('sortDirection 2', sortDirection)
-      //this.defaultSortField = fieldId
-
       const arrow = document.querySelector('.sortable-table__sort-arrow');
       field.append(this.subElements.arrow);
 
-      field.dataset.order = sortDirection
+      field.dataset.order = sortDirection;
 
       this.sort(fieldId, sortDirection);
-
-      //const { id, order } = column.dataset;
-
-      // const sortedData = this.sortData(id, toggleOrder(order));
-      //
-      // const arrow = column.querySelector('.sortable-table__sort-arrow');
-      //
-      // column.dataset.order = toggleOrder(order);
-
-      // if (!arrow) {
-      //   column.append(this.subElements.arrow);
-      // }
-
-      //this.subElements.body.innerHTML = this.getCells(sortedData);
     }
-
   }
 
   destroy() {
     this.element.remove();
   }
-
 }
