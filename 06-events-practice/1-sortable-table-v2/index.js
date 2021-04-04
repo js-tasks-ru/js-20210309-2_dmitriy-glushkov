@@ -13,7 +13,7 @@ export default class SortableTable {
     this.render();
   }
 
-  
+
   getLinkToImg(item) {
     if (item['images'] !== undefined && item['images'][0]['url'] !== undefined) {
       return item['images'][0]['url'];
@@ -149,15 +149,12 @@ export default class SortableTable {
     const field = event.target.closest('[data-sortable="true"]');
 
     if (field) {
-      if (field.querySelector('.sortable-table__sort-arrow') != null) {
-        if (field.dataset.order === 'asc') {
-          sortDirection = 'desc';
-        }
+      if (field.dataset.order === 'asc') {
+        sortDirection = 'desc';
       }
 
       const fieldId = field.dataset.id;
 
-      const arrow = document.querySelector('.sortable-table__sort-arrow');
       field.append(this.subElements.arrow);
 
       field.dataset.order = sortDirection;
