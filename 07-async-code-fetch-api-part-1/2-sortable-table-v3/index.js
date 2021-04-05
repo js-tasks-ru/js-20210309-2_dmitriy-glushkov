@@ -4,7 +4,7 @@ const BACKEND_URL = 'https://course-js.javascript.ru';
 
 export default class SortableTable {
 
-  itemsOnPage = 30
+  itemsOnPage = 5
 
   //constructor(headersConfig = [], { data = [], sorted = { id: headersConfig.find(item => item.sortable).id, order: 'asc'}} = {}) {
   constructor(headersConfig = [], data = {}) {
@@ -21,15 +21,23 @@ export default class SortableTable {
 
 
     // console.log("this.data in const",this.data)
-    this.render([{"id": "101-planset-lenovo-tab-p10-tb-x705l-32-gb-3g-lte-belyj",
-        "title": "10.1\" Планшет Lenovo TAB P10 TB-X705L 32 ГБ 3G, LTE белый",
-        "price": 300,
-        "rating": 5,
-        "discount": 0
-    }]);
+    // this.render([{"id": "101-planset-lenovo-tab-p10-tb-x705l-32-gb-3g-lte-belyj",
+    //     "title": "10.1\" Планшет Lenovo TAB P10 TB-X705L 32 ГБ 3G, LTE белый",
+    //     "price": 300,
+    //     "rating": 5,
+    //     "discount": 0
+    // }]);
+    this.render()
 
-    this.retrieveDataAndDrawTable(startSort.field, startSort.order, 0).then(
+    this.sortField = startSort.field;
+    this.sortOrder = startSort.order
+    this.currPage = 0
+
+    this.retrieveDataAndDrawTable(this.sortField, this.sortOrder, this.currPage).then(
       data => (this.subElements.body.innerHTML = this.getCells(data))    );
+
+    window.addEventListener('scroll', event => this.populate(event));
+
     //this.retrieveDataAndDrawTable(startSort.field, startSort.order, 0).then(data => this.render(data));
 
     // this.subElements.body.innerHTML = this.getCells(resData);
@@ -56,9 +64,22 @@ export default class SortableTable {
   }
 
 
-  async retrieveDataAndDrawTable(sortField, sortOrder, startPageNumber) {
+  populate() {
 
-    const fullUrl = this.constructURL(sortField, sortOrder, startPageNumber);
+    // нижняя граница документа
+    let windowRelativeBottom = document.documentElement.getBoundingClientRect().bottom;
+
+    if (windowRelativeBottom < document.documentElement.clientHeight + 100) {
+      console.log("Margin hit");
+      this.currPage += 1;
+      this.retrieveDataAndDrawTable(this.sortField, this.sortOrder, this.currPage)
+        .then(data => (this.subElements.body.append(this.getCells(data))));
+    }
+  }
+
+  async retrieveDataAndDrawTable(sortField, sortOrder, currPage) {
+
+    const fullUrl = this.constructURL(sortField, sortOrder, currPage);
 
     const json = await fetchJson(fullUrl.toString());
     //console.log('json', json)
@@ -87,14 +108,8 @@ export default class SortableTable {
 
   render(resvData) {
 
-    console.log('resvData', resvData.map(item => item));
-
-    const valenki = resvData.map(item => item);
-    console.log('valenki', valenki);
 
     this.data = resvData;
-    console.log('resvData this.data', this.data);
-
 
     const tempElem = document.createElement('div');
     tempElem.innerHTML = this.template;
@@ -139,11 +154,16 @@ export default class SortableTable {
   }
   getCells(data) {
     console.log('in getCells', data)
-    return data.map(item =>
-      `<a href="/products/${item.id}" class="sortable-table__row">
+    if (data === undefined) {
+      return `<div data-element="loading" class="loading-line sortable-table__loading-line"></div>`
+    } else {
+      return data.map(item =>
+        `<a href="/products/${item.id}" class="sortable-table__row">
         ${this.getFieldsOfCell(item)}
       </a>`
-    ).join('');
+      ).join('');
+    }
+
   }
   getFieldsOfCell(item) {
     const fieldNames = [];
