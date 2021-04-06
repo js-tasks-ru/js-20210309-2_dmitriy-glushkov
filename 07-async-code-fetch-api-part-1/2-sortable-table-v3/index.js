@@ -20,14 +20,10 @@ export default class SortableTable {
     this.sortOrder = startSort.order;
     this.currItemOnPage = 0;
 
-
-
     this.retrieveDataFromServer(this.sortField, this.sortOrder, this.currItemOnPage).then(
       data => (this.subElements.body.innerHTML = this.getCells(data)));
 
     window.addEventListener('scroll', event => this.populate(event));
-
-
   }
 
 
@@ -48,6 +44,7 @@ export default class SortableTable {
 
       this.sortField = fieldId;
       this.sortOrder = field.dataset.order;
+      this.currItemOnPage = 0;
 
       this.retrieveDataFromServer(fieldId, field.dataset.order, 0).then(
         data => (this.subElements.body.innerHTML = this.getCells(data)));
