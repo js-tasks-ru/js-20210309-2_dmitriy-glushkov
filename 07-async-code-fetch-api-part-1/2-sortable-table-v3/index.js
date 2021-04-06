@@ -12,17 +12,76 @@ export default class SortableTable {
     this.pathname = data.url;
     const startSort = { field: headersConfig.find(item => item.sortable).id, order: 'asc'};
 
+    this.defaultSortField = startSort.field;
+
     this.render();
 
     this.sortField = startSort.field;
     this.sortOrder = startSort.order;
     this.currItemOnPage = 0;
 
+
+
     this.retrieveDataFromServer(this.sortField, this.sortOrder, this.currItemOnPage).then(
       data => (this.subElements.body.innerHTML = this.getCells(data)));
 
     window.addEventListener('scroll', event => this.populate(event));
+
+
   }
+
+
+  clickToSort(event) {
+    let sortDirection = 'asc';
+    const field = event.target.closest('[data-sortable="true"]');
+    //console.log('field', field)
+
+    if (field) {
+      //console.log("in field")
+      if (field.dataset.order === 'asc') {
+        sortDirection = 'desc';
+      }
+      const fieldId = field.dataset.id;
+      //console.log('fieldId', fieldId)
+      field.append(this.subElements.arrow);
+      field.dataset.order = sortDirection;
+
+      this.sortField = fieldId;
+      this.sortOrder = field.dataset.order;
+
+      this.retrieveDataFromServer(fieldId, field.dataset.order, 0).then(
+        data => (this.subElements.body.innerHTML = this.getCells(data)));
+
+      //this.sort(fieldId, sortDirection);
+    }
+  }
+
+
+  // sort(field, direction) {
+  //   const sortedField = [];
+  //   this.data.map(dataItem => sortedField.push(dataItem[field]));
+  //   sortedField.sort(function (a, b) {
+  //     a = a.toString();
+  //     b = b.toString();
+  //     if (direction === 'desc') {
+  //       [a, b] = [b, a];
+  //     }
+  //     const icmp = a.localeCompare(b, undefined, { caseFirst: 'upper', numeric: true });
+  //     if (icmp !== 0) {
+  //       // spotted a difference when considering the locale
+  //       return icmp;
+  //     }
+  //   });
+  //   const resData = [];
+  //   sortedField.map(fieldItem => {
+  //     for (let dataItem of this.data) {
+  //       if (dataItem[field] === fieldItem) {
+  //         resData.push(dataItem);
+  //       }
+  //     }
+  //   });
+  //   this.subElements.body.innerHTML = this.getCells(resData);
+  // }
 
 
   constructURL(sortField, sortOrder, startItemOnPage) {
@@ -65,6 +124,7 @@ export default class SortableTable {
     const elem = tempElem.firstElementChild;
     this.element = elem;
     this.subElements = this.getSubElements(elem);
+    this.subElements.header.addEventListener('pointerdown', (event) => this.clickToSort(event));
   }
   get template() {
     return `
@@ -92,6 +152,7 @@ export default class SortableTable {
   }
   setArrow(field) {
     if (field === this.defaultSortField) {
+      //console.log('in set arrow field', field)
       return `
         <span data-element="arrow" class="sortable-table__sort-arrow">
         <span class="sort-arrow"></span>
@@ -123,5 +184,8 @@ export default class SortableTable {
       result[name] = subElement;
     }
     return result;
+  }
+  destroy() {
+    this.element.remove();
   }
 }
